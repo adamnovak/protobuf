@@ -14,7 +14,6 @@ edition = "2023";
 
 package protobuf_editions_test;
 
-import "net/proto/proto1_features.proto";
 import "google/protobuf/java_features.proto";
 import "google/protobuf/cpp_features.proto";
 import "google/protobuf/editions/proto/editions_transform_proto3.proto";
@@ -79,8 +78,7 @@ message TestMessage {
   map<string, string> string_map_field = 7;
   repeated int32 int_field = 8;
   repeated int32 int_field_packed = 9 [
-    features.repeated_field_encoding = PACKED,
-    features.(pb.proto1).legacy_packed = true
+    features.repeated_field_encoding = PACKED
   ];
 
   repeated int32 int_field_unpacked = 10;
