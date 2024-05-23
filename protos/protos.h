@@ -280,14 +280,28 @@ void DeepCopy(const T* source_message, T* target_message) {
 }
 
 template <typename T>
-void ClearMessage(Ptr<T> message) {
-  static_assert(!std::is_const_v<T>, "");
-  upb_Message_Clear(internal::GetInternalMsg(message), T::minitable());
-}
+inline constexpr bool IsPtr = std::is_base_of_v<Ptr<T>, T>;
 
 template <typename T>
-void ClearMessage(T* message) {
-  ClearMessage(protos::Ptr(message));
+struct Pulverize;
+
+template <typename T>
+struct Pulverize<Ptr<T>> {
+  using type = T;
+};
+
+template <typename T>
+struct Pulverize<T*> {
+  using type = T;
+};
+
+template <typename T, typename M = typename Pulverize<T>::type,
+          typename = std::enable_if<IsPtr<M> && !std::is_const_v<M>>>
+using PtrOrT = T;
+
+template <typename T>
+void ClearMessage(PtrOrT<T> message) {
+  upb_Message_Clear(internal::GetInternalMsg(message), T::minitable());
 }
 
 class ExtensionRegistry {
